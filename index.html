@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>IEI · Preparação para o Teste</title>
+<style>
+  :root{
+    --bg:#0d1016; --card:#151a23; --card2:#1b2130; --line:#242c3d;
+    --text:#e8ecf4; --muted:#9aa6ba; --accent:#ff4d5a; --accent2:#ffb020;
+    --ok:#2dd47a; --bad:#ff5d6c; --chip:#212a3c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    min-height:100vh;
+    background-image:radial-gradient(900px 400px at 80% -10%, rgba(255,77,90,.10), transparent),
+                     radial-gradient(700px 350px at 0% 110%, rgba(255,176,32,.06), transparent);
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:28px 18px 60px}
+  header.top{display:flex;flex-direction:column;gap:6px;margin-bottom:26px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:44px;height:44px;border-radius:12px;flex:none;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;color:#fff;letter-spacing:.5px;
+    box-shadow:0 6px 18px rgba(255,77,90,.35);
+  }
+  h1{font-size:22px;margin:0;font-weight:700}
+  .sub{color:var(--muted);font-size:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  h2{font-size:17px;margin:0 0 14px}
+  .deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+  .deck{
+    background:var(--card2);border:1.5px solid var(--line);border-radius:14px;
+    padding:16px;cursor:pointer;transition:.15s;position:relative;
+  }
+  .deck:hover{transform:translateY(-2px);border-color:#33405c}
+  .deck.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,77,90,.18)}
+  .deck .name{font-weight:700;font-size:15px;margin-bottom:4px}
+  .deck .desc{color:var(--muted);font-size:12.5px;line-height:1.45}
+  .deck .meta{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .pill{font-size:11.5px;background:var(--chip);border:1px solid var(--line);border-radius:99px;padding:3px 10px;color:var(--muted)}
+  .pill.best{color:var(--ok);border-color:rgba(45,212,122,.35)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .controls{margin-top:18px;display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+  .seg{display:flex;background:var(--card2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{
+    background:transparent;border:0;color:var(--muted);padding:9px 16px;font-size:13.5px;
+    cursor:pointer;font-weight:600;transition:.15s;font-family:inherit;
+  }
+  .seg button.on{background:var(--accent);color:#fff}
+  select{
+    background:var(--card2);color:var(--text);border:1px solid var(--line);
+    border-radius:10px;padding:9px 12px;font-size:13.5px;font-family:inherit;cursor:pointer;
+  }
+  .btn{
+    background:linear-gradient(135deg,var(--accent),#ff7a45);color:#fff;border:0;border-radius:12px;
+    padding:12px 26px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
+    box-shadow:0 6px 16px rgba(255,77,90,.3);transition:.15s;
+  }
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .btn.ghost{background:var(--card2);border:1px solid var(--line);box-shadow:none;color:var(--text)}
+  .btn.ghost:hover{border-color:#3a4763}
+  .statline{margin-top:16px;color:var(--muted);font-size:12.5px}
+  /* quiz */
+  .qtop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{font-size:12px;background:var(--chip);border:1px solid var(--line);border-radius:99px;padding:4px 12px;color:var(--muted)}
+  .chip b{color:var(--text);font-weight:600}
+  .counter{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .pbar{height:7px;background:var(--card2);border-radius:99px;overflow:hidden;margin-bottom:22px;border:1px solid var(--line)}
+  .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .25s}
+  .qq{font-size:19px;font-weight:650;line-height:1.5;margin:0 0 20px}
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{
+    display:flex;gap:12px;align-items:flex-start;text-align:left;
+    background:var(--card2);border:1.5px solid var(--line);border-radius:13px;
+    padding:13px 15px;color:var(--text);font-size:15px;line-height:1.45;cursor:pointer;
+    transition:.13s;font-family:inherit;
+  }
+  .opt:hover:not(:disabled){border-color:#3a4763;transform:translateX(3px)}
+  .opt .key{
+    flex:none;width:26px;height:26px;border-radius:8px;background:var(--chip);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;font-weight:700;color:var(--muted);
+  }
+  .opt.sel{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(255,176,32,.15)}
+  .opt.sel .key{background:var(--accent2);color:#1a1300;border-color:transparent}
+  .opt.right{border-color:var(--ok);background:rgba(45,212,122,.10)}
+  .opt.right .key{background:var(--ok);color:#03210f;border-color:transparent}
+  .opt.wrong{border-color:var(--bad);background:rgba(255,93,108,.10)}
+  .opt.wrong .key{background:var(--bad);color:#2b0409;border-color:transparent}
+  .opt:disabled{cursor:default}
+  .expl{
+    margin-top:18px;border-radius:13px;padding:15px 17px;font-size:14px;line-height:1.55;
+    border:1px solid rgba(45,212,122,.35);background:rgba(45,212,122,.07);
+  }
+  .expl.bad{border-color:rgba(255,93,108,.35);background:rgba(255,93,108,.07)}
+  .expl .tag{font-weight:800;font-size:12px;letter-spacing:.8px;text-transform:uppercase;display:block;margin-bottom:6px}
+  .expl .tag.g{color:var(--ok)} .expl .tag.b{color:var(--bad)}
+  .navrow{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+  .hint{color:var(--muted);font-size:12px;margin-top:14px;text-align:center}
+  /* results */
+  .scorewrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .ring{position:relative;width:130px;height:130px;flex:none}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .val b{font-size:30px}
+  .ring .val span{font-size:11px;color:var(--muted)}
+  .grade{font-size:24px;font-weight:800;margin-bottom:6px}
+  .grade-sub{color:var(--muted);font-size:14px}
+  .tstats{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  .trow{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:13.5px}
+  .trow .tn{color:var(--muted)} .trow .tv{font-variant-numeric:tabular-nums}
+  .tbar{grid-column:1/-1;height:6px;background:var(--card2);border-radius:99px;overflow:hidden}
+  .tbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:99px}
+  .rev{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+  .rev h3{font-size:15px;margin:8px 0 2px}
+  .revcard{background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:14px 16px;font-size:14px;line-height:1.5}
+  .revcard .rq{font-weight:650;margin-bottom:8px}
+  .revcard .ra{color:var(--bad);font-size:13px;margin-bottom:4px}
+  .revcard .rc{color:var(--ok);font-size:13px;margin-bottom:8px}
+  .revcard .re{color:var(--muted);font-size:13px}
+  .backrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  footer{margin-top:40px;color:var(--muted);font-size:12px;text-align:center;line-height:1.6}
+  @media (max-width:560px){ .qq{font-size:17px} .wrap{padding:18px 12px 40px} }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+"use strict";
+
+/* ============ TÓPICOS E DECKS ============ */
+const TOPICS = {
+  sist:  {name:"Sistema de produção & produtividade", deck:"t2"},
+  bom:   {name:"Lista de materiais (BOM)",            deck:"t2"},
+  stocks:{name:"Gestão de stocks",                    deck:"t2"},
+  sc:    {name:"Supply Chain",                        deck:"t2"},
+  trab:  {name:"Estudo do trabalho",                  deck:"t2"},
+  layout:{name:"Tipos de layout",                     deck:"a5"},
+  bal:   {name:"Balanceamento de linhas",             deck:"a5"},
+  proj:  {name:"Projetos, Gantt & risco",             deck:"gp"},
+};
+const DECKS = {
+  t2: {name:"Aula Teórica 2",       sub:"Produção, desperdícios, BOM, stocks, supply chain, estudo do trabalho"},
+  a5: {name:"Aula 5 — Layout",      sub:"Tipos de layout e balanceamento de linhas de montagem"},
+  gp: {name:"Gestão de Projetos",   sub:"Planeamento, Gantt, caminho crítico e análise de risco"},
+  all:{name:"Teste completo",       sub:"Todas as perguntas dos três decks, baralhadas"},
+};
+
+/* ============ BANCO DE PERGUNTAS ============
+   t: tópico | q: pergunta | o: opções | a: índice da correta | e: explicação
+   k:true → não baralhar opções (ordem fixa)                              */
+const QS = [
+/* ---- Aula T2 · Sistema de produção e produtividade ---- */
+{t:"sist", q:"Num sistema de produção, quais dos seguintes são INPUTS?",
+ o:["Materiais, recursos humanos, equipamentos e edifício, capital e informação",
+    "Apenas as matérias-primas e componentes",
+    "O produto e o serviço resultantes",
+    "Níveis de stock, qualidade, custo e procura"], a:0,
+ e:"Inputs: materiais (matérias-primas, WIP, FGI), recursos humanos, equipamentos e edifício, capital e informação. Os níveis de stock, qualidade, custo e procura fazem parte do bloco CONTROLO (informação de feedback); o produto/serviço são os outputs."},
+{t:"sist", q:"O que é o WIP (Work In Progress)?",
+ o:["Produto em curso de fabrico","Produto acabado","Matérias-primas e componentes","Consumíveis como óleos e ferramentas de desgaste"], a:0,
+ e:"WIP = produto em curso de fabrico. Produto acabado é o FGI (Finish Goods Inventory); matérias-primas = raw material; óleos e ferramentas de desgaste = consumíveis."},
+{t:"sist", q:"FGI (Finish Goods Inventory) corresponde a…",
+ o:["ao produto acabado","ao produto em curso","à sucata","aos consumíveis"], a:0,
+ e:"FGI = Finish Goods Inventory = stock de produto acabado."},
+{t:"sist", q:"A produtividade define-se como…",
+ o:["a relação entre os outputs produzidos e os inputs consumidos","o total de unidades produzidas","o cumprimento dos objetivos definidos","o lucro da empresa por trabalhador"], a:0,
+ e:"Produtividade = output / input. Ex.: 1000 unidades ÷ 250 horas = 4 unid./hora. Nota: fazer o trabalho com o mínimo de recursos é eficiência; cumprir objetivos é eficácia."},
+{t:"sist", q:"Uma empresa produziu 1000 unidades gastando 250 horas de trabalho. A produtividade é:",
+ o:["4 unidades por hora","2,5 unidades por hora","250 unidades por hora","1000 unidades por hora"], a:0,
+ e:"1000 unid. ÷ 250 h = 4 unid./hora (exatamente o exemplo dos slides)."},
+{t:"sist", q:"No cálculo da produtividade, o denominador (inputs)…",
+ o:["pode incluir múltiplos fatores: trabalho + energia + capital + outros","inclui sempre apenas as horas de trabalho","inclui apenas o capital investido","não é considerado"], a:0,
+ e:"Atenção dada nos slides: no denominador podem ser considerados múltiplos fatores de produtividade (trabalho, energia, capital, outros) — não só as horas de trabalho."},
+{t:"sist", q:"O que é a eficiência?",
+ o:["Fazer um trabalho com o mínimo de recursos e desperdício","Cumprir os objetivos propostos","Produzir o máximo possível, seja qual for o custo","Aumentar o preço do produto"], a:0,
+ e:"Eficiência = fazer o trabalho com o mínimo de recursos e desperdício. Um aumento de eficiência leva a um aumento da produtividade."},
+{t:"sist", q:"O que é a eficácia?",
+ o:["Diz respeito ao cumprimento dos objetivos propostos","Fazer um trabalho com o mínimo de recursos","Produzir com a melhor tecnologia","Reduzir os stocks ao mínimo"], a:0,
+ e:"Eficácia = cumprir os objetivos. Procura-se ser eficiente, mas atingindo os objetivos pretendidos (ser eficaz)."},
+{t:"sist", q:"Uma empresa produz muito bem 100 cadeiras/dia, mas o objetivo era produzir 150 cadeiras/dia. A empresa é:",
+ o:["eficiente, mas não eficaz","eficaz, mas não eficiente","eficiente e eficaz","nem eficiente nem eficaz"], a:0,
+ e:"Exemplo dos slides: pode ser muito eficiente a produzir 100 cadeiras/dia, mas se o objetivo for 150, não é eficaz."},
+{t:"sist", q:"Um aumento da eficiência…",
+ o:["leva a um aumento da produtividade","leva a uma queda da produtividade","não tem relação com a produtividade","só aumenta a produtividade se houver mais stock"], a:0,
+ e:"Aumento de eficiência → aumento da produtividade (relação indicada nos slides)."},
+{t:"sist", q:"O que é “desperdício” em operações?",
+ o:["Qualquer coisa que não gere valor para o cliente","Todo e qualquer custo da empresa","A produção feita por robôs","O tempo gasto em reuniões"], a:0,
+ e:"Desperdício = qualquer “coisa” que não gere valor para o cliente → gera custos desnecessários e consumo excessivo de recursos."},
+{t:"sist", q:"Qual das seguintes NÃO é um dos 7 desperdícios?",
+ o:["A manutenção preventiva dos equipamentos","O excesso de produção","Os defeitos (retrabalho ou perda)","As movimentações desnecessárias"], a:0,
+ e:"Os 7 desperdícios: excesso de produção, tempos de espera, transporte desnecessário, processos desnecessários, excesso de stock, defeitos (retrabalho ou perda) e movimentações desnecessárias. A manutenção preventiva não é um desperdício — ajuda a evitá-los."},
+{t:"sist", q:"Quais são os “+2” desperdícios, para além dos 7 clássicos?",
+ o:["Recursos como energia, água e ar + potencial humano dos colaboradores","Salários e rendas","Publicidade e marketing","Impostos e taxas"], a:0,
+ e:"Os “7+2 desperdícios” acrescentam: desperdício de recursos (energia, água, ar) e desperdício do potencial humano dos colaboradores."},
+{t:"sist", q:"Segundo os slides, movimentações e transportes…",
+ o:["são desperdícios diferentes","são exatamente a mesma coisa","não são desperdícios","só são desperdícios na indústria automóvel"], a:0,
+ e:"Nos slides aparecem separados: movimentações (pessoas, dentro da estação/posto) e transportes (materiais entre locais) são desperdícios diferentes."},
+
+/* ---- Aula T2 · BOM ---- */
+{t:"bom", q:"O que é o BOM (Bill of Materials)?",
+ o:["A lista de materiais / estrutura do produto: base de dados com os itens, as relações entre eles e as quantidades necessárias","O orçamento anual de compras de materiais","A lista de fornecedores aprovados","O manual de instruções do produto"], a:0,
+ e:"O BOM (lista de materiais, ou estrutura do produto) relaciona os itens e as quantidades necessárias à fabricação; pode ter estrutura em árvore ou lista indentada, com diferentes níveis."},
+{t:"bom", q:"O BOM é uma base de dados essencial de que sistema informático?",
+ o:["ERP (enterprise resource planning)","CRM (gestão de relações com clientes)","CAD (desenho assistido por computador)","SCADA (controlo industrial)"], a:0,
+ e:"O BOM é uma base de dados essencial do software ERP (enterprise resource planning system)."},
+{t:"bom", q:"O que é uma gama operatória?",
+ o:["Um conjunto de operações que devem ser executadas para se obter um produto acabado","A lista de preços dos materiais","O conjunto de fornecedores de um produto","O tempo de ciclo da linha"], a:0,
+ e:"Gama operatória = conjunto de operações que devem ser executadas para se obter um produto acabado. O BOM contém as gamas operatórias, sequências de operações, tempos de produção e equipamentos."},
+{t:"bom", q:"Na estrutura do produto em árvore, o produto acabado (ex.: a cadeira) fica no nível…",
+ o:["0","1","2","3"], a:0,
+ e:"Produto acabado = nível 0; componentes diretos (assento, pernas, encosto) = nível 1; subcomponentes = nível 2, etc. Na lista indentada, a quantidade (1) é omitida."},
+{t:"bom", q:"Para que é essencial o BOM?",
+ o:["Definir o produto e especificações, identificar fornecedores, planear stocks de materiais e planear operações de produção","Apenas para calcular salários","Apenas para efeitos contabilísticos","Para definir o layout da fábrica"], a:0,
+ e:"O BOM é essencial para: definir o produto e suas especificações, identificar fornecedores, planear stocks de materiais e planear operações de produção."},
+{t:"bom", q:"Que tipos de itens podem aparecer num BOM?",
+ o:["Sub-montagens, componentes intermédios, matérias-primas e itens comprados","Apenas matérias-primas","Apenas itens comprados","Apenas produtos acabados"], a:0,
+ e:"Os itens podem ser sub-montagens, componentes intermédios (artigos compostos), matérias-primas ou itens comprados."},
+{t:"bom", q:"No diagrama de tarefas, uma seta liga…",
+ o:["a tarefa precedente à tarefa sucessora","a tarefa mais rápida à mais lenta","tarefas com a mesma duração","estações de trabalho"], a:0,
+ e:"A seta sai da tarefa precedente e entra na tarefa sucessora — é a forma de representar relações de precedência (antes de montar o encosto, tem de existir o encosto…)."},
+
+/* ---- Aula T2 · Stocks ---- */
+{t:"stocks", q:"Quais são as duas decisões fundamentais na gestão de stocks?",
+ o:["Que quantidade encomendar (quanto?) e quando fazer a encomenda","Onde armazenar e quem transportar","Que preço praticar e a quem vender","Quanto produzir e a quem comprar"], a:0,
+ e:"Decisões a tomar: quantidade a encomendar (Quanto?) e momento da realização da encomenda (Quando?). Objetivo: minimizar o custo."},
+{t:"stocks", q:"Qual é o objetivo da gestão de stocks?",
+ o:["Minimizar o custo","Maximizar o stock para nunca ter roturas","Minimizar o número de fornecedores","Maximizar o espaço do armazém"], a:0,
+ e:"Objetivo da gestão de stocks: minimizar o custo."},
+{t:"stocks", q:"O custo administrativo da encomenda (Ca) é um custo de…",
+ o:["encomenda / aprovisionamento","posse (stockagem)","rotura","material"], a:0,
+ e:"Custos de encomenda ou aprovisionamento incluem o custo administrativo da encomenda (Ca). Custos de posse (Cp) são outros: monetários diretos, funcionamento do armazém, oportunidade, obsolescência."},
+{t:"stocks", q:"Qual destes NÃO é um custo de posse (Cp)?",
+ o:["O custo administrativo da encomenda","O custo de funcionamento do armazém","O custo de oportunidade","O custo de obsolescência"], a:0,
+ e:"Custos de posse: custos monetários diretos, custo de funcionamento do armazém, custo de oportunidade e custo de obsolescência. O custo administrativo da encomenda é um custo de aprovisionamento."},
+{t:"stocks", q:"Óleos e ferramentas de desgaste são exemplos de que tipo de stock?",
+ o:["Consumíveis","Matérias-primas","Produto acabado (FGI)","Produto em curso (WIP)"], a:0,
+ e:"Tipos de stocks: matérias-primas (raw material), artigos em curso de fabrico (WIP), consumíveis (óleos, ferramentas de desgaste) e produto acabado (FGI)."},
+{t:"stocks", q:"Para que servem os stocks?",
+ o:["Apenas armazenar bens para satisfazer a procura","Apenas desacoplar processos de produção","Apenas beneficiar de descontos de quantidade","Todas as anteriores: satisfazer a procura, desacoplar processos, descontos de quantidade e proteção da variação de preços/inflação"], a:3, k:true,
+ e:"Os stocks são essenciais para: armazenar bens para satisfazer a procura, desacoplar processos de produção, beneficiar de descontos de quantidade e criar mecanismos de proteção da variação de preços e inflação."},
+{t:"stocks", q:"No modelo de gestão de stocks de revisão contínua, qual dos pressupostos é FALSO?",
+ o:["A quantidade encomendada varia de encomenda para encomenda","A monitorização dos níveis de stock é constante","A procura é conhecida e constante","O prazo de entrega é conhecido e constante"], a:0,
+ e:"Pressupostos da revisão contínua: monitorização constante, procura conhecida e constante, prazo de entrega conhecido e constante, receção instantânea e completa e quantidade de encomenda FIXA."},
+{t:"stocks", q:"O nivelamento das entregas (entregas menores, mais frequentes)…",
+ o:["reduz o nível de stock","aumenta o nível de stock","não altera o nível de stock","aumenta a necessidade de armazém"], a:0,
+ e:"A entrega de pequenas quantidades mas com maior frequência reduz o nível de stock (gráfico de nivelamento das entregas dos slides)."},
+
+/* ---- Aula T2 · Supply Chain ---- */
+{t:"sc", q:"Quais são os 3 tipos de fluxos entre as entidades de uma supply chain?",
+ o:["Materiais, financeiro e informação","Materiais, pessoas e energia","Produtos, serviços e resíduos","Dinheiro, marketing e logística"], a:0,
+ e:"3 tipos de fluxos entre entidades da SC: materiais, financeiro e informação — em ambos os sentidos (direto e inverso)."},
+{t:"sc", q:"Os fluxos numa supply chain ocorrem…",
+ o:["em ambos os sentidos (direto e inverso)","apenas no sentido direto (fornecedor → cliente)","apenas no sentido inverso (cliente → fornecedor)","apenas entre produtores e distribuidores"], a:0,
+ e:"Os fluxos de materiais, financeiros e de informação ocorrem em ambos os sentidos: direto e inverso."},
+{t:"sc", q:"Qual destes é um tipo de entidade da supply chain?",
+ o:["Transportadores","Órgãos reguladores","Consultores de marketing","Seguradoras"], a:0,
+ e:"Entidades da SC: fornecedores de matéria-prima/componentes, produtores, armazenistas, transportadores, distribuidores, retalhistas e outros."},
+{t:"sc", q:"A gestão da supply chain (SCM)…",
+ o:["integra a gestão da procura e da oferta, dentro e entre empresas, da origem da matéria-prima até à entrega do produto acabado, incluindo coordenação e colaboração com parceiros","gere apenas o transporte de mercadorias","diz respeito só ao armazém da fábrica","engloba apenas as vendas e o marketing"], a:0,
+ e:"Supply chain management integra supply and demand management, within and across companies: planeamento e gestão de todos os processos desde a matéria-prima até à entrega do produto acabado, incluindo coordenação e colaboração com parceiros."},
+{t:"sc", q:"Qual destas atividades NÃO consta da lista de atividades da gestão da supply chain?",
+ o:["Gestão de marketing digital","Previsão de vendas","Gestão de compras","Gestão do transporte"], a:0,
+ e:"A gestão da SC inclui, entre outras: previsão de vendas, gestão de materiais, armazenagem, planeamento da produção, serviço após venda, localização de instalações, compras, embalagem, transporte, devoluções, resíduos e reaproveitamento de materiais."},
+
+/* ---- Aula T2 · Estudo do trabalho ---- */
+{t:"trab", q:"Os níveis de análise do estudo do trabalho, do mais elementar para o mais complexo, são:",
+ o:["Micro-movimentos → elementos → tarefa → trabalho","Elementos → micro-movimentos → trabalho → tarefa","Tarefa → trabalho → elementos → micro-movimentos","Trabalho → tarefa → elementos → micro-movimentos"], a:0,
+ e:"Micro-movimentos: alcançar, agarrar, posicionar, largar. Elemento: sequência de 2+ movimentos (apanhar, transportar, posicionar). Tarefa: agregação de 2+ elementos numa atividade completa (tornear uma peça). Trabalho: conjunto de tarefas a executar."},
+{t:"trab", q:"“Tornear uma peça” ou “montar um subconjunto” são exemplos de:",
+ o:["Tarefa","Micro-movimento","Elemento","Trabalho"], a:0,
+ e:"Tarefa = agregação de dois ou mais elementos numa atividade completa, tal como tornear uma peça ou montar um subconjunto."},
+{t:"trab", q:"“Alcançar, agarrar, posicionar ou largar um objeto” são exemplos de:",
+ o:["Micro-movimentos","Elementos","Tarefas","Trabalhos"], a:0,
+ e:"Micro-movimentos são o nível mais elementar: alcançar, agarrar, posicionar ou largar objeto."},
+{t:"trab", q:"O trabalho desenvolvido por cada trabalhador ou grupo deve ser concebido de forma a ser:",
+ o:["Eficaz, cómodo e motivador","Rápido, barato e silencioso","Simples, repetitivo e autónomo","Global, flexível e digital"], a:0,
+ e:"O trabalho deve ser concebido de forma a ser eficaz, cómodo e motivador — com atenção a conflitos de interesses, aspetos comportamentais e fisiológicos e evolução dos processos."},
+{t:"trab", q:"Conhecer os tempos de trabalho é importante porque permite:",
+ o:["Apenas avaliar o desempenho dos trabalhadores","Apenas determinar o custo unitário do produto","Apenas programar operações","Todas as anteriores: avaliar desempenho, planear capacidade de mão de obra e equipamento, determinar o custo unitário e programar operações"], a:3, k:true,
+ e:"O conhecimento dos tempos permite: avaliar desempenho dos trabalhadores, planear necessidades de capacidade de mão de obra e equipamento, determinar o custo unitário do produto e programar operações."},
+
+/* ---- Aula 5 · Tipos de layout ---- */
+{t:"layout", q:"O layout de uma instalação pretende maximizar…",
+ o:["Apenas a satisfação do cliente","Apenas a utilização do espaço, equipamento e pessoas","Apenas a segurança","Todas as anteriores: satisfação do cliente, utilização do espaço/equipamento/pessoas, eficiência do fluxo (informação, material, pessoas) e segurança"], a:3, k:true,
+ e:"Objetivo do layout: maximizar a satisfação do cliente, a utilização do espaço, equipamento e pessoas, a eficiência do fluxo de informação, material e pessoas, e a segurança."},
+{t:"layout", q:"“Fabricar um avião não é o mesmo que produzir milhares de garrafas de refrigerante” refere-se a que fator a considerar no layout?",
+ o:["Produto — design e volume do produto","Processo — equipamento e capacidade","Recursos humanos — qualidade de vida no trabalho","Localização — restrições do edifício"], a:0,
+ e:"É o exemplo dos slides para o fator Produto (design e volume). Os quatro fatores do layout económico: produto, processo, recursos humanos e localização."},
+{t:"layout", q:"Que fatores devem ser considerados num layout económico?",
+ o:["Produto, processo, recursos humanos e localização","Preço, promoção e distribuição","Clientes, concorrentes e fornecedores","Máquinas, ferramentas e energia"], a:0,
+ e:"Layout económico considera: produto (design e volume), processo (equipamento e capacidade), recursos humanos (qualidade de vida no trabalho) e localização (restrições do edifício e local)."},
+{t:"layout", q:"No layout de posição fixa…",
+ o:["os recursos movimentam-se até ao local de execução do projeto (ex.: construção de um navio ou edifício)","o produto percorre estações de trabalho em linha","o layout é definido pelo fluxo de informação","o layout depende do balanço entre espaço e manuseamento"], a:0,
+ e:"Layout de posição fixa: os recursos movimentam-se até ao local de execução do projeto. Exemplos: construção de um navio ou de um edifício."},
+{t:"layout", q:"O layout de escritório é definido em função de…",
+ o:["do fluxo de informação","do fluxo de materiais","da satisfação do consumidor","do custo do arrendamento"], a:0,
+ e:"No layout de escritório, a posição dos trabalhadores, equipamento e espaços é definida em função do fluxo de informação."},
+{t:"layout", q:"No layout de retalho/serviço, a localização do produto é definida em função de…",
+ o:["do espaço e da satisfação do consumidor/cliente","do fluxo de informação","do tempo de ciclo","do número de operadores"], a:0,
+ e:"Layout de retalho/serviço: localização do produto definida em função do espaço e da satisfação do consumidor/cliente."},
+{t:"layout", q:"O layout de armazém é definido pelo balanço entre…",
+ o:["o espaço e o manuseamento de material","o custo e a qualidade","a oferta e a procura","o volume e a variedade"], a:0,
+ e:"O layout de armazém é definido pelo balanço entre o espaço e o manuseamento de material."},
+{t:"layout", q:"O layout orientado para o processo aplica-se a…",
+ o:["volumes reduzidos e variedade elevada (ex.: hospital, oficina)","volumes elevados e variedade reduzida (ex.: indústria automóvel)","construção de navios","lojas de retalho"], a:0,
+ e:"Layout orientado para o processo define-se em função do processo produtivo; aplica-se a volumes reduzidos e variedade elevada. Exemplos: hospital, oficina."},
+{t:"layout", q:"O layout orientado para o produto aplica-se a…",
+ o:["volumes elevados e variedade reduzida, em produção contínua ou repetitiva (ex.: ind. automóvel, ind. química)","volumes reduzidos e variedade elevada","projetos de construção civil","escritórios e serviços"], a:0,
+ e:"No layout orientado para o produto, pessoas e equipamentos são localizados em função das fases de produção; aplica-se a volumes elevados e variedade reduzida (ind. automóvel, ind. química)."},
+{t:"layout", q:"No layout orientado para o produto, pessoas e equipamentos são localizados em função de…",
+ o:["das fases de produção do produto","das relações de precedência entre departamentos","do preço dos terrenos","da antiguidade dos colaboradores"], a:0,
+ e:"Pessoas e equipamentos são localizados em função das fases de produção do produto — daí o ambiente de produção contínua ou repetitiva."},
+{t:"layout", q:"Qual é a diferença entre linha de produção e linha de montagem?",
+ o:["A linha de produção fabrica componentes usando máquinas em série (equilibra-se por redesenho físico); a linha de montagem monta peças fabricadas usando estações de trabalho (equilibra-se pela afetação de tarefas às estações)","A linha de produção monta peças; a linha de montagem fabrica componentes","São exatamente a mesma coisa","A linha de produção é para hospitais; a de montagem para fábricas"], a:0,
+ e:"Linha de produção: fabrico de componentes, máquinas em série, processo repetitivo, balanceada através do redesenho físico. Linha de montagem: montagem de peças fabricadas, estações de trabalho, processo repetitivo, balanceada pela diferente afetação das tarefas às estações."},
+{t:"layout", q:"Qual NÃO é um pressuposto do layout orientado para o produto?",
+ o:["A procura é imprevisível e muito variável","O volume é adequado para utilização intensiva do equipamento","A procura é estável e o produto é standard","As matérias-primas têm fornecedores adequados e qualidade uniforme"], a:0,
+ e:"Pressupostos: volume adequado para utilização intensiva do equipamento; procura estável e produto standard (ou fase do ciclo de vida que justifique investimento em equipamento especializado); matérias-primas e componentes com fornecedores adequados e qualidade uniforme."},
+{t:"layout", q:"A conceção de um layout orientado para o produto visa minimizar…",
+ o:["o desequilíbrio da linha de produção/montagem","o número de clientes","a qualidade do produto","o espaço de armazenagem"], a:0,
+ e:"A conceção do layout orientado para o produto visa minimizar o desequilíbrio da linha de produção/montagem. Tipos de linhas: linha de produção (fabrico) e linha de montagem."},
+
+/* ---- Aula 5 · Balanceamento ---- */
+{t:"bal", q:"Quais são os objetivos do balanceamento de linhas de montagem?",
+ o:["Maximizar a eficiência e minimizar o número de estações de trabalho","Maximizar o número de operadores e de estações","Minimizar a cadência","Maximizar o tempo de ciclo"], a:0,
+ e:"Balanceamento = dividir o trabalho necessário entre as diversas estações de trabalho de modo equitativo. Objetivos: maximizar a eficiência e minimizar o número de estações de trabalho."},
+{t:"bal", q:"O tempo de ciclo (Tc) corresponde a…",
+ o:["ao tempo entre a produção de unidades sucessivas à saída da linha","ao tempo total de montagem de uma unidade","ao tempo da tarefa mais longa","ao tempo de funcionamento diário da linha"], a:0,
+ e:"O tempo de ciclo corresponde ao tempo entre a produção de unidades sucessivas à saída da linha."},
+{t:"bal", q:"Para uma cadência (CAD) de 60 peças por hora, qual é o tempo de ciclo?",
+ o:["1 minuto por peça","60 minutos por peça","6 minutos por peça","0,6 minutos por peça"], a:0,
+ e:"Tc = 1/CAD = 60 min ÷ 60 peças = 1 min/peça. Atenção às unidades de tempo: nunca misturar horas, minutos e segundos!"},
+{t:"bal", q:"A cadência (CAD) é…",
+ o:["a taxa de output pretendida","o tempo entre unidades produzidas","o número de operadores da linha","a soma dos tempos elementares"], a:0,
+ e:"CAD = nº de peças produzidas por unidade de tempo (taxa de output). O tempo de ciclo é o seu inverso: Tc = 1/CAD."},
+{t:"bal", q:"Processo com 3 estações (A, B, C), 1 min/peça em cada, processamento em lotes de 10 (batch flow). Quanto demoram 10 unidades a atravessar o processo?",
+ o:["30 minutos","10 minutos","12 minutos","3 minutos"], a:0,
+ e:"Em batch flow o lote espera ficar completo em cada estação: 10 (A) + 10 (B) + 10 (C) = 30 minutos."},
+{t:"bal", q:"O mesmo processo (3 estações, 1 min/peça, 10 unidades) em fluxo contínuo (processa-se uma, movimenta-se uma) demora:",
+ o:["12 minutos","30 minutos","10 minutos","1 minuto"], a:0,
+ e:"Fluxo contínuo: as unidades avançam uma a uma, em pipeline — 1 (A) + 1 (B) + 10 (C) = 12 minutos. Metade do tempo do batch flow!"},
+{t:"bal", q:"Se a operação mais longa (ex.: acabamento) demora 5 minutos, então (com 1 operador por estação):",
+ o:["o tempo de ciclo não pode ser inferior a 5 minutos (Tc ≥ maior ti)","o tempo de ciclo pode ser de 1 minuto","a tarefa deve ser eliminada","o número de estações duplica"], a:0,
+ e:"Pressuposto: Tc ≥ maior ti. Se o acabamento demora 5 min, não é possível um tempo de ciclo de 1 min por peça (a tarefa é indivisível)."},
+{t:"bal", q:"Ao agrupar tarefas numa estação/posto de trabalho (PT), a soma dos tempos elementares (Σti) tem de ser:",
+ o:["≤ Tc (tempo de ciclo)","≥ Tc","exatamente igual a Tc","igual a 2×Tc"], a:0,
+ e:"A soma dos tempos elementares que se realizam num posto de trabalho tem de ser ≤ Tc — caso contrário a estação tornava-se um gargalo."},
+{t:"bal", q:"Qual NÃO é um pressuposto do balanceamento de linhas de montagem?",
+ o:["Os tempos de cada operador variam bastante de dia para dia","As relações de precedência e os tempos elementares são conhecidos","Cada tarefa e o seu tempo ti são indivisíveis","Os operadores têm desempenhos idênticos"], a:0,
+ e:"Pressupostos: precedências e tempos conhecidos; cada operador leva sempre o mesmo tempo a realizar uma tarefa; desempenhos idênticos; tarefas indivisíveis; Tc ≥ maior ti; Σti por PT ≤ Tc."},
+{t:"bal", q:"Qual é o 1.º passo do procedimento geral de balanceamento?",
+ o:["Representar o diagrama de precedências","Calcular o número de operadores","Determinar a eficiência","Escolher a heurística"], a:0,
+ e:"Procedimento: 1) diagrama de precedências → 2) definir a CAD → 3) determinar Tc → 4) calcular N teórico → 5) eficiência teórica → 6) balancear com heurísticas (Σti ≤ Tc por posto) → 7) eficiência obtida → 8) se for reduzida, novo balanceamento com outra heurística."},
+{t:"bal", q:"O número teórico de operadores calcula-se por:",
+ o:["N = Σti / Tc (arredondado ao valor inteiro, por excesso)","N = Tc / Σti","N = Σti × Tc","N = Σti − Tc"], a:0,
+ e:"N = Σti / Tc, arredondado ao valor inteiro (por excesso): se der 5,5 operadores, são necessários 6."},
+{t:"bal", q:"Pretendem-se 40 unidades/dia, com 480 minutos disponíveis por dia. Qual é o tempo de ciclo?",
+ o:["12 minutos por unidade","40 minutos por unidade","8 minutos por unidade","480 minutos por unidade"], a:0,
+ e:"Tc = tempo disponível ÷ produção pretendida = 480 ÷ 40 = 12 min/unidade (Exemplo 1 dos slides)."},
+{t:"bal", q:"No Exemplo 1, Σti = 66 min e Tc = 12 min. Qual é o número mínimo de operadores?",
+ o:["6 (66/12 = 5,5 → arredonda para cima)","5 (truncando 5,5)","55","12"], a:0,
+ e:"N = 66 ÷ 12 = 5,5 → arredonda para cima → 6 operadores."},
+{t:"bal", q:"A eficiência de um balanceamento calcula-se por:",
+ o:["Eficiência = Σti / (N × Tc)","Eficiência = (N × Tc) / Σti","Eficiência = Σti × N × Tc","Eficiência = Tc / Σti"], a:0,
+ e:"Eficiência = Σti / (N × Tc) — trabalho útil dividido pelo tempo total disponível dos N operadores."},
+{t:"bal", q:"Com Σti = 66 min, N = 6 operadores e Tc = 12 min, a eficiência é:",
+ o:["91,7%","100%","76,4%","54,5%"], a:0,
+ e:"Eficiência = 66 ÷ (6 × 12) = 66/72 = 0,9167 → 91,7%."},
+{t:"bal", q:"No Exemplo 3, com Σti = 274 s e Tc = 60 s, qual é o número teórico de operadores?",
+ o:["5 (274/60 = 4,57 → arredonda para cima)","4 (truncando 4,57)","6","60"], a:0,
+ e:"N = 274 ÷ 60 = 4,57 → arredonda para cima → 5 operadores teóricos (a heurística pode depois exigir mais estações)."},
+{t:"bal", q:"Uma heurística é…",
+ o:["um procedimento para resolução de problemas que não garante a solução ótima","um método que garante sempre a solução ótima","uma fórmula exata de eficiência","um tipo de diagrama de precedências"], a:0,
+ e:"Heurística = procedimento para resolução de problemas que NÃO garante a solução ótima — por isso, se a eficiência for reduzida, tenta-se outra heurística."},
+{t:"bal", q:"Quantas heurísticas de balanceamento foram apresentadas nos slides?",
+ o:["4: maior duração, maior nº de tarefas seguintes, menor duração e menor nº de tarefas seguintes","2: maior duração e menor duração","7 (os 7 desperdícios)","Nenhuma — usam-se métodos exatos"], a:0,
+ e:"As 4 heurísticas: operação com maior duração (maior ti); operação com maior nº de tarefas seguintes; operação com menor duração; operação com menor nº de tarefas seguintes."},
+{t:"bal", q:"A heurística “operação com maior nº de tarefas seguintes” seleciona…",
+ o:["a tarefa com maior número de operações subsequentes","a tarefa com maior duração (ti)","a tarefa com menor duração (ti)","a última tarefa do diagrama"], a:0,
+ e:"Seleciona a tarefa com maior número de operações/tarefas subsequentes (as que vêm depois dela no diagrama de precedências)."},
+{t:"bal", q:"Uma linha está bem balanceada quando…",
+ o:["a eficiência é ≥ 95% e a folga (tempos mortos/inoperantes) é < 5%","a eficiência é ≥ 50%","todas as estações têm exatamente 1 tarefa","o número de operadores é o máximo possível"], a:0,
+ e:"Linha bem balanceada: eficiência ≥ 95% e folga (tempos mortos/inoperantes) < 5%."},
+{t:"bal", q:"Se a eficiência do balanceamento obtido for reduzida, deve-se:",
+ o:["fazer novo balanceamento aplicando outra heurística","aumentar o tempo de ciclo","despedir operadores","aceitar o resultado na mesma"], a:0,
+ e:"Passo 8 do procedimento: se a eficiência for reduzida, fazer novo balanceamento aplicando outra heurística."},
+{t:"bal", q:"Uma empresa quer 60 unidades/hora numa linha de montagem. O tempo de ciclo é:",
+ o:["60 segundos por unidade","60 minutos por unidade","1 hora por unidade","6 segundos por unidade"], a:0,
+ e:"Tc = 1/CAD = 3600 s ÷ 60 unid. = 60 s/unidade (= 1 min). É o valor usado nos Exemplos 3 e 4."},
+
+/* ---- Gestão de Projetos ---- */
+{t:"proj", q:"Qual destas NÃO é uma caraterística de um projeto?",
+ o:["É uma atividade repetitiva e rotineira","É único — atividade única, esporádica, não repetitiva","Envolve numerosas atividades interrelacionadas","Cria algo novo, em contínua evolução"], a:0,
+ e:"Um projeto é uma atividade ÚNICA, esporádica e NÃO repetitiva; cria algo novo em contínua evolução, desenvolve-se em condições de mudanças frequentes, as decisões são irreversíveis e requer especialização."},
+{t:"proj", q:"Dizer que um projeto é “temporário” significa que…",
+ o:["tem um início e um fim definidos","dura menos de um ano","é cancelado a qualquer momento","não tem prazo de entrega"], a:0,
+ e:"Temporário: tem um início e um fim definidos."},
+{t:"proj", q:"As decisões tomadas durante um projeto são…",
+ o:["irreversíveis","sempre reversíveis","sempre adiáveis","tomadas apenas pelo cliente"], a:0,
+ e:"Caraterística dos projetos: as decisões são irreversíveis — daí a importância do planeamento."},
+{t:"proj", q:"Quais são as três grandes fases da gestão de projetos?",
+ o:["Planeamento, programação e controlo","Conceção, produção e venda","Orçamento, execução e lucro","Análise, design e teste"], a:0,
+ e:"Gestão de projetos = Planeamento + Programação + Controlo."},
+{t:"proj", q:"No planeamento, o estabelecimento de objetivos inclui objetivos de:",
+ o:["custo, tempo (prazo) e resultados (qualidade — cumprir as especificações)","apenas custo","marketing e vendas","recursos humanos e informáticos"], a:0,
+ e:"Objetivos de custo, tempo (prazo) e resultados (qualidade — cumprir as especificações)."},
+{t:"proj", q:"“Definir o projeto” significa:",
+ o:["criar um produto, serviço ou resultado exclusivo — definir qual o resultado final","escrever o contrato com o cliente","escolher o software de gestão","definir o logótipo do projeto"], a:0,
+ e:"Definir o projeto = criar um produto, serviço ou resultado exclusivo e definir o resultado final. Exemplo dos slides: melhoria de um posto de trabalho vs. remodelação da fábrica (escala muito diferente)."},
+{t:"proj", q:"O que inclui a fase de PROGRAMAÇÃO?",
+ o:["Determinar precedências entre atividades, sequenciar, estimar durações/custos/recursos e determinar atividades críticas","Formar as equipas do projeto","Monitorizar orçamentos e recursos","Estabelecer os objetivos de custo e prazo"], a:0,
+ e:"Programação: identificar relações de precedência, sequenciar atividades, determinar duração e custo, estimar necessidades de recursos e determinar atividades críticas. Formar equipas é planeamento; monitorizar é controlo."},
+{t:"proj", q:"A fase de CONTROLO consiste em:",
+ o:["monitorizar recursos, qualidade e orçamentos e rever o planeamento / transferir recursos para cumprir a data de conclusão","definir o resultado final do projeto","desenhar o diagrama de Gantt pela primeira vez","escolher os fornecedores do projeto"], a:0,
+ e:"Controlo: monitorar recursos, qualidade e orçamentos; rever o planeamento e transferir recursos de modo a cumprir a data definida para a conclusão do projeto."},
+{t:"proj", q:"A organização de um projeto é…",
+ o:["uma estrutura temporária com especialistas, liderada pelo gestor do projeto, que coordena as atividades e monitoriza programação e custos","igual à organização permanente da empresa","obrigatoriamente uma organização matricial","uma estrutura sem gestor definido"], a:0,
+ e:"A organização do projeto é uma estrutura temporária, que necessita de especialistas em determinadas áreas e é liderada pelo gestor do projeto (coordena as atividades; monitoriza a programação e os custos)."},
+{t:"proj", q:"Qual destas NÃO é uma qualidade apontadas ao gestor de projeto (LÍDER)?",
+ o:["Ser obrigatoriamente o maior especialista técnico da equipa","Capacidade de organização e coordenação","Compreender o essencial dos problemas técnicos","Ser um bom negociador e bom gestor de recursos humanos"], a:0,
+ e:"O gestor do projeto é um LÍDER com: capacidade de organização/coordenação, compreensão do essencial dos problemas técnicos (não precisa de ser o maior especialista), capacidade de negociação e gestão de recursos humanos."},
+{t:"proj", q:"Na organização em matriz, os projetos…",
+ o:["recebem especialistas das várias funções (marketing, operações, engenharia, finanças)","têm equipas totalmente independentes da estrutura funcional","só existem na área de engenharia","não têm gestor de projeto"], a:0,
+ e:"Na organização matricial, os vários projetos são cruzados com as funções (Mkt, Oper, Eng, Fin): os especialistas funcionais são afetados aos projetos. Na organização simples há projetos com equipas dedicadas a par da estrutura funcional."},
+{t:"proj", q:"Quais são as técnicas de gestão de projetos apresentadas?",
+ o:["Diagrama de Gantt, CPM (Critical Path Method) e PERT","Gantt e ERP","CPM e BOM","PERT e MRP"], a:0,
+ e:"As três técnicas: Diagrama de Gantt, CPM (Critical Path Method) e PERT (Program Evaluation & Review Technique)."},
+{t:"proj", q:"Os diagramas de Gantt ajudam a garantir que…",
+ o:["Apenas todas as atividades sejam planeadas","Apenas o estado de desenvolvimento seja registado","Apenas os tempos de execução sejam documentados","Todas as anteriores: atividades planeadas, estado registado, tempos documentados e duração do projeto definida"], a:3, k:true,
+ e:"Os gráficos de Gantt ajudam a garantir: que todas as atividades sejam planeadas, o estado de desenvolvimento seja registado, os tempos de execução das atividades sejam documentados e a duração do projeto seja definida."},
+{t:"proj", q:"A principal limitação do diagrama de Gantt é:",
+ o:["não ilustrar adequadamente as inter-relações entre as atividades e os recursos em cada atividade","ser impossível de desenhar no Excel","não permitir registar datas","só funcionar para projetos de construção"], a:0,
+ e:"O Gantt não ilustra adequadamente as inter-relações entre atividades e os recursos — por isso é mais indicado para projetos simples, permitindo observar a progressão de cada atividade."},
+{t:"proj", q:"O diagrama de Gantt é especialmente adequado para:",
+ o:["projetos simples","projetos muito complexos, com milhares de atividades","gestão de stocks","balanceamento de linhas de montagem"], a:0,
+ e:"O Gantt usa-se em projetos simples: permite observar a progressão de cada atividade, identificar e resolver problemas."},
+{t:"proj", q:"No Gantt, atividades executadas em simultâneo exigem atenção especial à:",
+ o:["alocação de recursos","cor dos barramentos no gráfico","duração total do projeto","qualidade do produto"], a:0,
+ e:"Atividades em simultâneo → atenção com a alocação de recursos (os mesmos recursos podem ser precisos ao mesmo tempo em duas atividades). Atividades com precedências → atenção às precedências."},
+{t:"proj", q:"Um “entregável” (deliverable) é:",
+ o:["um resultado passível de avaliação e aprovação","uma reunião de progresso","o orçamento do projeto","um atraso tolerado"], a:0,
+ e:"Os entregáveis são resultados passíveis de avaliação e aprovação; os marcos (milestones) são pontos de referência, como “ter o 1.º capítulo feito”."},
+{t:"proj", q:"O caminho crítico de um projeto é:",
+ o:["o caminho mais longo da rede","o caminho mais curto da rede","o conjunto das atividades mais baratas","a sequência de atividades com mais folga"], a:0,
+ e:"Caminho crítico = caminho mais longo da rede. Qualquer atraso nas atividades críticas implica atraso na conclusão do projeto."},
+{t:"proj", q:"As atividades críticas…",
+ o:["têm folga zero — qualquer atraso implica atraso na conclusão do projeto","têm sempre muita folga","podem atrasar sem consequências","são as atividades mais curtas"], a:0,
+ e:"Atividades críticas não têm folga (Folga = 0): qualquer atraso nelas atrasa o projeto todo."},
+{t:"proj", q:"A “folga” de uma atividade representa:",
+ o:["o atraso permitido na conclusão dessa atividade","o tempo de processamento da atividade","o custo da atividade","o número de recursos afetos"], a:0,
+ e:"A folga representa o atraso permitido na conclusão de uma atividade (sem atrasar o projeto). Nas atividades críticas, folga = 0."},
+{t:"proj", q:"No exercício do Gantt (atividades A–H), a soma de todas as durações é 25 semanas. O projeto demora 25 semanas?",
+ o:["Não — há atividades em paralelo; a duração é dada pelo caminho crítico: 15 semanas","Sim, demora 25 semanas","Sim, mas só se tudo correr mal","Não — demora 5 semanas"], a:0,
+ e:"Somar as durações ignora o paralelismo (ex.: A e B decorrem em simultâneo). A duração do projeto é a do caminho crítico: A(2)→C(2)→E(4)→G(5)→H(2) = 15 semanas."},
+{t:"proj", q:"Qual é o caminho crítico do exercício A–H (A:2, B:3, C:2, D:4, E:4, F:3, G:5, H:2)?",
+ o:["A → C → E → G → H, com 15 semanas","A → B → D → G → H, com 16 semanas","A → C → F → H, com 9 semanas","B → D → G → H, com 14 semanas"], a:0,
+ e:"A→C→E→G→H = 2+2+4+5+2 = 15 semanas (o caminho mais longo). B→D→G→H = 14; A→D→G→H = 13; A→C→F→H = 9. Atenção: G precisa de D e E; H precisa de F e G."},
+{t:"proj", q:"O risco de um evento calcula-se por:",
+ o:["Risco = severidade do evento × probabilidade de ocorrência do evento","Risco = severidade + probabilidade","Risco = custo / tempo","Risco = probabilidade / severidade"], a:0,
+ e:"Risco = severidade do evento × probabilidade de ocorrência do evento."},
+{t:"proj", q:"O risco de um evento pode ter um efeito:",
+ o:["positivo ou negativo","apenas negativo","apenas positivo","sempre neutro"], a:0,
+ e:"O risco de um evento pode ter um efeito positivo ou negativo nas operações. Do ponto de vista das operações, um efeito negativo resulta de algum tipo de falha."},
+{t:"proj", q:"Do ponto de vista das operações, um efeito negativo de um risco resulta de:",
+ o:["algum tipo de falha","falta de orçamento","excesso de colaboradores","má comunicação com o cliente"], a:0,
+ e:"Do ponto de vista das operações, um efeito negativo resulta de algum tipo de falha — daí a gestão do risco focar-se em identificar e prevenir falhas."},
+{t:"proj", q:"A gestão do risco inclui:",
+ o:["Apenas contratar seguros","Apenas evitar os riscos","Apenas calcular probabilidades","Todas as anteriores: identificar falhas (avaliando severidade e probabilidade), prevenir, minimizar consequências e elaborar planos de recuperação"], a:3, k:true,
+ e:"Gestão do risco: identificar as falhas que podem ocorrer e avaliar severidade e probabilidade; identificar formas de prevenir as falhas; minimizar as consequências negativas; elaborar planos e procedimentos de recuperação."},
+{t:"proj", q:"Risco: um fornecedor falha a entrega. Mitigação indicada nos slides:",
+ o:["Ter vários fornecedores","Aumentar o stock para muitos anos","Mudar de país","Ignorar o risco"], a:0,
+ e:"Fornecedor falha a entrega → ter vários fornecedores."},
+{t:"proj", q:"Risco: catástrofe natural. Mitigações indicadas nos slides:",
+ o:["Ter seguro e pelo menos dois fornecedores em zonas geográficas diferentes","Ter um único fornecedor muito grande","Encerrar a produção","Reduzir os seguros para poupar"], a:0,
+ e:"Catástrofe natural → ter seguro; ter pelo menos dois fornecedores em zonas geográficas diferentes."},
+{t:"proj", q:"Risco: perda/distorção de informação. Mitigação indicada nos slides:",
+ o:["Utilizar uma tecnologia com um sistema internacional de comunicação","Imprimir tudo em papel","Eliminar os sistemas informáticos","Comunicar apenas por telefone"], a:0,
+ e:"Perda/distorção de informação → utilizar uma tecnologia com um sistema internacional de comunicação."},
+{t:"proj", q:"Risco: um fornecedor falha na qualidade do produto. Mitigação indicada nos slides:",
+ o:["Selecionar fornecedores certificados","Baixar o preço que se paga ao fornecedor","Fazer mais inspecções no cliente final","Trocar de fornecedor todos os meses"], a:0,
+ e:"Fornecedor falha na qualidade do produto → selecionar fornecedores certificados."},
+{t:"proj", q:"Qual é um dos objetivos da programação (como técnica de gestão de projetos)?",
+ o:["Ajudar a utilizar melhor os recursos (humanos, financeiros e materiais) através da identificação de estrangulamentos críticos no projeto","Definir o salário da equipa do projeto","Escolher o logótipo do projeto","Substituir o gestor de projeto"], a:0,
+ e:"Objetivos da programação: mostrar o relacionamento entre atividades, identificar precedências, encorajar estimativas realistas de duração e custo, e ajudar a usar melhor os recursos identificando estrangulamentos críticos."},
+{t:"proj", q:"Qual destas perguntas NÃO é respondida pelas técnicas de gestão de projetos (lista dos slides)?",
+ o:["Qual é a cor preferida do cliente para o produto?","Quais são as atividades críticas no projeto?","O projeto está no tempo certo, em atraso ou adiantado?","O custo do projeto está acima ou abaixo do orçamento?"], a:0,
+ e:"As técnicas respondem a: quando é que o projeto vai estar concluído; quais as atividades críticas e não críticas; se está no tempo, em atraso ou adiantado; se o custo está acima/abaixo do orçamento; se há recursos suficientes; e a probabilidade de conclusão na data definida."},
+];
+
+/* ============ ESTADO ============ */
+let state = {
+  screen:"home", deck:"t2", mode:"estudo", count:10,
+  session:[], idx:0, results:[], // results: {q, opts, correctIdx, chosenIdx}
+};
+
+/* ============ PERSISTÊNCIA ============ */
+const SKEY = "iei-quiz-stats-v1";
+function loadStats(){ try{ return JSON.parse(localStorage.getItem(SKEY)) || {answered:0, correct:0, best:{}}; }catch(e){ return {answered:0, correct:0, best:{}}; } }
+function saveStats(s){ try{ localStorage.setItem(SKEY, JSON.stringify(s)); }catch(e){} }
+
+/* ============ UTILS ============ */
+const $ = sel => document.querySelector(sel);
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function deckOf(id){ return id; }
+function questionsForDeck(deck){
+  if(deck==="all") return QS.slice();
+  return QS.filter(q => TOPICS[q.t].deck === deck);
+}
+const LETTERS = ["A","B","C","D","E"];
+
+/* ============ ECRÃ: INÍCIO ============ */
+function renderHome(){
+  const stats = loadStats();
+  let deckCards = "";
+  for(const [id,d] of Object.entries(DECKS)){
+    const n = questionsForDeck(id).length;
+    const best = stats.best && stats.best[id];
+    deckCards += `
+      <div class="deck ${state.deck===id?"selected":""}" data-deck="${id}">
+        <div class="name">${d.name}</div>
+        <div class="desc">${d.sub}</div>
+        <div class="meta">
+          <span class="pill">${n} perguntas</span>
+          ${best!=null?`<span class="pill best">melhor: ${best}%</span>`:""}
+        </div>
+      </div>`;
+  }
+  const counts = [10,20,30].filter(c=>c<=questionsForDeck(state.deck).length);
+  const maxN = questionsForDeck(state.deck).length;
+  let countOpts = counts.map(c=>`<option value="${c}" ${state.count===c?"selected":""}>${c} perguntas</option>`).join("");
+  countOpts += `<option value="all" ${state.count==="all"?"selected":""}>Todas (${maxN})</option>`;
+  if(!counts.includes(state.count) && state.count!=="all") { state.count = counts[0]||"all"; }
+
+  $("#app").innerHTML = `
+    <header class="top">
+      <div class="brand">
+        <div class="logo">IEI</div>
+        <div>
+          <h1>Preparação para o Teste</h1>
+          <div class="sub">Introdução à Engenharia Industrial · quiz interativo com base nos slides</div>
+        </div>
+      </div>
+    </header>
+    <div class="card">
+      <h2>1 · Escolhe o tema</h2>
+      <div class="deck-grid">${deckCards}</div>
+      <div class="controls">
+        <div class="field">
+          <label>2 · Modo</label>
+          <div class="seg" id="modeseg">
+            <button data-mode="estudo" class="${state.mode==="estudo"?"on":""}">📖 Estudo (feedback imediato)</button>
+            <button data-mode="teste" class="${state.mode==="teste"?"on":""}">📝 Teste (feedback no fim)</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>3 · Comprimento</label>
+          <select id="countsel">${countOpts}</select>
+        </div>
+        <button class="btn" id="startbtn">Começar ▶</button>
+      </div>
+      ${stats.answered>0?`<div class="statline">Desde sempre: ${stats.answered} perguntas respondidas · ${stats.correct} certas (${Math.round(100*stats.correct/stats.answered)}%).</div>`:""}
+    </div>
+    <footer>Perguntas geradas a partir de: “SLIDES Aula Teórica 2”, “IEI slides aula 5 (Layout)” e “SLIDES Aula Teórica — gestão de projetos” · IEI 2026/2027<br>Atalhos: teclas 1–4 respondem · Enter avança</footer>
+  `;
+
+  document.querySelectorAll(".deck").forEach(el=>{
+    el.addEventListener("click", ()=>{ state.deck = el.dataset.deck; renderHome(); });
+  });
+  document.querySelectorAll("#modeseg button").forEach(b=>{
+    b.addEventListener("click", ()=>{ state.mode = b.dataset.mode; renderHome(); });
+  });
+  $("#countsel").addEventListener("change", e=>{ state.count = e.target.value==="all" ? "all" : parseInt(e.target.value); });
+  $("#startbtn").addEventListener("click", startQuiz);
+}
+
+/* ============ SESSÃO ============ */
+function buildSession(pool){
+  let picked = shuffle(pool);
+  if(state.count!=="all" && typeof state.count==="number") picked = picked.slice(0, state.count);
+  // prepara opções (baralhadas, salvo ordem fixa)
+  return picked.map(q=>{
+    let opts = q.o.map((text,i)=>({text, correct:i===q.a}));
+    if(!q.k) opts = shuffle(opts);
+    return { base:q, opts, correctIdx: opts.findIndex(o=>o.correct) };
+  });
+}
+function startQuiz(){
+  state.session = buildSession(questionsForDeck(state.deck));
+  if(state.session.length===0) return;
+  state.idx = 0; state.results = [];
+  state.screen = "quiz";
+  renderQuestion();
+}
+function retryWrong(){
+  const wrong = state.results.filter(r=>r.chosenIdx!==r.correctIdx).map(r=>r.item.base);
+  state.deck = state.deck; // mantém
+  state.session = buildSession(wrong);
+  state.idx = 0; state.results = [];
+  state.screen = "quiz";
+  renderQuestion();
+}
+
+/* ============ ECRÃ: PERGUNTA ============ */
+function renderQuestion(){
+  const item = state.session[state.idx];
+  const q = item.base;
+  const topic = TOPICS[q.t];
+  const deck = DECKS[topic.deck];
+  const n = state.session.length;
+  const pct = Math.round(100*state.idx/n);
+  const answered = state.results.some(r=>r.item===item);
+
+  $("#app").innerHTML = `
+    <header class="top"><div class="brand">
+      <div class="logo">IEI</div>
+      <div><h1>${deck.name}</h1><div class="sub">modo ${state.mode==="estudo"?"estudo":"teste"} · ${state.mode==="estudo"?"feedback imediato":"feedback no fim"}</div></div>
+    </div></header>
+    <div class="pbar"><i style="width:${pct}%"></i></div>
+    <div class="qtop">
+      <div class="chips">
+        <span class="chip">📘 <b>${topic.name}</b></span>
+      </div>
+      <span class="counter">${state.idx+1} / ${n}</span>
+    </div>
+    <div class="card">
+      <p class="qq">${esc(q.q)}</p>
+      <div class="opts" id="opts">
+        ${item.opts.map((o,i)=>`
+          <button class="opt" data-i="${i}">
+            <span class="key">${LETTERS[i]}</span><span>${esc(o.text)}</span>
+          </button>`).join("")}
+      </div>
+      <div id="feedback"></div>
+      <div class="navrow" id="navrow"></div>
+      <div class="hint">Dica: teclas 1–${item.opts.length} para responder · Enter para avançar</div>
+    </div>
+  `;
+
+  document.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click", ()=>choose(parseInt(btn.dataset.i)));
+  });
+}
+
+function choose(i){
+  const item = state.session[state.idx];
+  if(state.results.some(r=>r.item===item)) return; // já respondida (modo estudo)
+  const q = item.base;
+
+  if(state.mode==="estudo"){
+    state.results.push({item, chosenIdx:i, correctIdx:item.correctIdx, q});
+    const ok = i===item.correctIdx;
+    document.querySelectorAll(".opt").forEach((btn,bi)=>{
+      btn.disabled = true;
+      if(bi===item.correctIdx) btn.classList.add("right");
+      if(bi===i && !ok) btn.classList.add("wrong");
+    });
+    $("#feedback").innerHTML = `
+      <div class="expl ${ok?"":"bad"}">
+        <span class="tag ${ok?"g":"b"}">${ok?"✓ Certa!":"✗ Errada — a resposta certa é a opção "+LETTERS[item.correctIdx]}</span>
+        ${esc(q.e)}
+      </div>`;
+    const last = state.idx===state.session.length-1;
+    $("#navrow").innerHTML = `<button class="btn" id="nextbtn">${last?"Ver resultados 🏁":"Próxima →"}</button>`;
+    $("#nextbtn").addEventListener("click", next);
+    $("#nextbtn").focus();
+  } else {
+    // modo teste: apenas seleciona; confirma no botão
+    document.querySelectorAll(".opt").forEach((btn,bi)=>{
+      btn.classList.toggle("sel", bi===i);
+    });
+    $("#navrow").innerHTML = `<button class="btn" id="confirmbtn">Confirmar ✓</button>`;
+    $("#confirmbtn").addEventListener("click", ()=>{
+      state.results.push({item, chosenIdx:i, correctIdx:item.correctIdx, q});
+      next();
+    });
+  }
+}
+
+function next(){
+  if(state.idx < state.session.length-1){
+    state.idx++;
+    renderQuestion();
+    window.scrollTo({top:0, behavior:"smooth"});
+  } else {
+    finish();
+  }
+}
+
+/* ============ ECRÃ: RESULTADOS ============ */
+function finish(){
+  state.screen = "results";
+  const res = state.results;
+  const n = res.length;
+  const correct = res.filter(r=>r.chosenIdx===r.correctIdx).length;
+  const pct = n? Math.round(100*correct/n) : 0;
+
+  // stats por tópico
+  const byTopic = {};
+  res.forEach(r=>{
+    const t = r.q.t;
+    byTopic[t] = byTopic[t] || {c:0,n:0};
+    byTopic[t].n++;
+    if(r.chosenIdx===r.correctIdx) byTopic[t].c++;
+  });
+  let trows = "";
+  for(const [t,s] of Object.entries(byTopic)){
+    const p = Math.round(100*s.c/s.n);
+    trows += `<div class="trow"><span class="tn">${TOPICS[t].name}</span><span class="tv">${s.c}/${s.n} · ${p}%</span><div class="tbar"><i style="width:${p}%"></i></div></div>`;
+  }
+
+  // atualiza stats persistentes
+  const stats = loadStats();
+  stats.answered += n; stats.correct += correct;
+  const dkey = state.deck;
+  stats.best = stats.best||{};
+  if(stats.best[dkey]==null || pct>stats.best[dkey]) stats.best[dkey]=pct;
+  saveStats(stats);
+
+  const grade = pct>=90?["🔥 Excelente!","Estás pronto para o teste — só polir detalhes."]
+              : pct>=70?["💪 Bom trabalho!","Falta pouco. Repete as que falhei para chegar aos 90%."]
+              : pct>=50?["📚 A meio do caminho","Revê os slides dos tópicos com % mais baixa e volta a tentar."]
+              : ["🔄 Há trabalho a fazer","Começa pelo modo Estudo, lê as explicações e repete aos poucos."];
+
+  const wrong = res.filter(r=>r.chosenIdx!==r.correctIdx);
+  let review = "";
+  if(wrong.length){
+    review = wrong.map(r=>`
+      <div class="revcard">
+        <div class="rq">${esc(r.q.q)}</div>
+        <div class="ra">✗ A tua resposta: ${esc(r.item.opts[r.chosenIdx].text)}</div>
+        <div class="rc">✓ Correta: ${esc(r.item.opts[r.correctIdx].text)}</div>
+        <div class="re">💡 ${esc(r.q.e)}</div>
+      </div>`).join("");
+  } else {
+    review = `<div class="revcard">Sem erros — tudo certo! 🎉</div>`;
+  }
+
+  const ring = 2*Math.PI*54;
+  const ringColor = pct>=70? "#2dd47a" : pct>=50? "#ffb020":"#ff5d6c";
+
+  $("#app").innerHTML = `
+    <header class="top"><div class="brand">
+      <div class="logo">IEI</div>
+      <div><h1>Resultados</h1><div class="sub">${DECKS[state.deck].name} · modo ${state.mode}</div></div>
+    </div></header>
+    <div class="card">
+      <div class="scorewrap">
+        <div class="ring">
+          <svg width="130" height="130">
+            <circle cx="65" cy="65" r="54" stroke="#232b3c" stroke-width="11" fill="none"/>
+            <circle cx="65" cy="65" r="54" stroke="${ringColor}" stroke-width="11" fill="none"
+                    stroke-linecap="round" stroke-dasharray="${ring}" stroke-dashoffset="${ring*(1-pct/100)}"/>
+          </svg>
+          <div class="val"><b>${pct}%</b><span>${correct} de ${n}</span></div>
+        </div>
+        <div>
+          <div class="grade">${grade[0]}</div>
+          <div class="grade-sub">${grade[1]}</div>
+        </div>
+      </div>
+      <div class="tstats">${trows}</div>
+      <div class="backrow">
+        ${wrong.length?`<button class="btn" id="retrywrong">Repetir as que falhei (${wrong.length})</button>`:""}
+        <button class="btn ghost" id="again">Repetir quiz</button>
+        <button class="btn ghost" id="home">Menu inicial</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>Revisão ${wrong.length?`— as ${wrong.length} que falhaste`:""}</h2>
+      <div class="rev">${review}</div>
+    </div>
+  `;
+
+  if(wrong.length) $("#retrywrong").addEventListener("click", retryWrong);
+  $("#again").addEventListener("click", startQuiz);
+  $("#home").addEventListener("click", ()=>{ state.screen="home"; renderHome(); });
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ============ TECLADO ============ */
+document.addEventListener("keydown", e=>{
+  if(state.screen!=="quiz") return;
+  const item = state.session[state.idx];
+  const k = e.key;
+  if(/^[1-5]$/.test(k)){
+    const i = parseInt(k)-1;
+    if(i < item.opts.length){
+      const alreadyAnswered = state.mode==="estudo" && state.results.some(r=>r.item===item);
+      if(!alreadyAnswered) choose(i);
+    }
+  }
+  if(/^[a-dA-D]$/.test(k)){
+    const i = k.toLowerCase().charCodeAt(0)-97;
+    if(i < item.opts.length){
+      const alreadyAnswered = state.mode==="estudo" && state.results.some(r=>r.item===item);
+      if(!alreadyAnswered) choose(i);
+    }
+  }
+  if(e.key==="Enter"){
+    const nb = $("#nextbtn"); if(nb){ nb.click(); return; }
+    const cb = $("#confirmbtn"); if(cb){ cb.click(); return; }
+    // modo teste: se nada selecionado, não faz nada
+  }
+});
+
+/* ============ ARRANQUE ============ */
+renderHome();
+</script>
+</body>
+</html>
